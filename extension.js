@@ -45,6 +45,7 @@ game.import("extension", function () {
             skill: {
                 skill: {
                     "chong_jianxiong": {
+                        group: ["chong_jianxiong_tagSkill"],
                         audio: ["ext:破界重塑/character/chong_caocao/chong_jianxiong1.mp3", "ext:破界重塑/character/chong_caocao/chong_jianxiong2.mp3"],
                         trigger: {
                             player: "damageEnd",
@@ -64,7 +65,32 @@ game.import("extension", function () {
                                 },
                             },
                         },
-                        "_priority": 0,
+                        subSkill: {
+                            "tagSkill": {
+                                trigger: {
+                                    source: "damageBegin1",
+                                },
+                                audio: "chong_jianxiong",
+                                filter(event, player) {
+                                    if (!event.card) return false;
+                                    const evt = event.getParent("useCard");
+                                    if (!evt || evt.card !== event.card || evt.cards?.length !== 1) return false;
+                                    return player.hasHistory(
+                                        "lose",
+                                        evtx =>
+                                            evtx.getParent() === evt &&
+                                            Object.keys(evtx.gaintag_map).some(i => {
+                                                return evtx.gaintag_map[i].some(tag => tag.startsWith("chong_jianxiong_tag"));
+                                            })
+                                    );
+                                },
+                                forced: true,
+                                async content(event, trigger, player) {
+                                    debugger;
+                                    trigger.num++;
+                                },
+                            }
+                        }
                     },
                     "chong_rende": {
                         mark: true,
@@ -386,7 +412,7 @@ game.import("extension", function () {
                             return player.countCards("h") > 0;
                         },
                         async cost(event, trigger, player) {
-                            var resultCard = await player.chooseToDiscard("挟令：请弃置一张牌，让所有人无法使用或打出该花色的牌", "h").forResult();
+                            var resultCard = await player.chooseToDiscard("挟令：请弃置一张牌，让所有人本回合无法使用或打出该花色的牌", "h").forResult();
                             if (resultCard.bool) {
                                 event.result = resultCard;
                             }
@@ -438,7 +464,8 @@ game.import("extension", function () {
                 },
                 translate: {
                     "chong_jianxiong": "奸雄",
-                    "chong_jianxiong_info": "每当你受到伤害后，你可以获得对你造成伤害的牌，然后摸X张牌（X为此次伤害的伤害点数）",
+                    "chong_jianxiong_info": "每当你受到伤害后，你可以获得对你造成伤害的牌，此牌伤害+1，然后摸X张牌（X为此次伤害的伤害点数）",
+                    "chong_jianxiong_tag": "雄",
                     "chong_rende": "仁德",
                     "chong_rende_info": "出牌阶段，你可以将任意张手牌交给其他角色。你每给出一张牌获得一个\"仁\"标记",
                     "chong_renze": "仁泽",
