@@ -26,7 +26,7 @@ game.import("extension", function () {
                 character: {
                     "chong_liubei": ["male", "shu", 4, ["chong_rende", "chong_dewei", "chong_renze", "chong_jijiang"], ["zhu", "ext:破界重塑/character/chong_liubei/1.jpg", "die:ext:破界重塑/audio/die/die.mp3"]],
                     "chong_sunquan": ["male", "wu", 4, ["chong_zhiheng", "chong_jiuyuan"], ["zhu", "ext:破界重塑/character/chong_sunquan/1.png", "die:ext:破界重塑/audio/die/die.mp3"]],
-                    "chong_caocao": ["male", "wei", 4, ["chong_jianxiong", "chong_xieling"], ["zhu", "ext:破界重塑/character/chong_caocao/1.jpg", "die:ext:破界重塑/audio/die/chong_caocao.mp3"]],
+                    "chong_caocao": ["male", "wei", 4, ["chong_jianxiong", "chong_xieling", "chong_hujia"], ["zhu", "ext:破界重塑/character/chong_caocao/1.jpg", "die:ext:破界重塑/audio/die/chong_caocao.mp3"]],
                 },
                 translate: {
                     "chong_liubei": "重刘备",
@@ -51,8 +51,10 @@ game.import("extension", function () {
                             player: "damageEnd",
                         },
                         async content(event, trigger, player) {
-                            await player.gain(trigger.cards, "gain2");
-                            await player.addGaintag(trigger.cards, "chong_jianxiong_tag");
+                            if (get.itemtype(trigger.cards) == "cards" && get.position(trigger.cards[0], true) == "o") {
+                                await player.gain(trigger.cards, "gain2");
+                                await player.addGaintag(trigger.cards, "chong_jianxiong_tag");
+                            }
                             await player.draw(trigger.num);
                         },
                         ai: {
@@ -66,7 +68,7 @@ game.import("extension", function () {
                             },
                         },
                         subSkill: {
-                            "tagSkill": {
+                            tagSkill: {
                                 trigger: {
                                     source: "damageBegin1",
                                 },
@@ -89,8 +91,12 @@ game.import("extension", function () {
                                     debugger;
                                     trigger.num++;
                                 },
-                            }
-                        }
+                                sub: true,
+                                sourceSkill: "chong_jianxiong",
+                                "_priority": 0,
+                            },
+                        },
+                        "_priority": 0,
                     },
                     "chong_rende": {
                         mark: true,
@@ -435,7 +441,7 @@ game.import("extension", function () {
                                         str += get.translation(suit);
                                         str += "花色的牌";
                                         return str;
-                                    }
+                                    },
                                 },
                                 mod: {
                                     ignoredHandcard: function (card, player) {
@@ -444,22 +450,61 @@ game.import("extension", function () {
                                     cardEnabled: function (card, player) {
                                         if (card.suit == player.storage.chong_xieling_suit) return false;
                                     },
-                                    cardEnabled: function (card, player) {
-                                        if (card.suit == player.storage.chong_xieling_suit) return false;
-                                    }
-                                }
+                                },
+                                sub: true,
+                                sourceSkill: "chong_xieling",
+                                "_priority": 0,
                             },
-                            suit2: {
+                            "suit2": {
                                 mod: {
                                     cardEnabled: function (card, player) {
                                         if (game.hasPlayer(current => { return card.suit == current.storage.chong_xieling_suit })) return false;
                                     },
-                                    cardEnabled: function (card, player) {
-                                        if (game.hasPlayer(current => { return card.suit == current.storage.chong_xieling_suit })) return false;
-                                    }
-                                }
-                            }
+                                },
+                                sub: true,
+                                sourceSkill: "chong_xieling",
+                                "_priority": 0,
+                            },
                         },
+                        "_priority": 0,
+                    },
+                    "chong_hujia": {
+                        audio:["ext:破界重塑/character/chong_caocao/chong_hujia1.mp3", "ext:破界重塑/character/chong_caocao/chong_hujia2.mp3"],
+                        zhuSkill: true,
+                        trigger: {
+                            player: "damageAfter",
+                        },
+                        filter: function (event, player) {
+                            if (player.hasSkill("chong_hujia_used")||event.source==undefined) {
+                                return false;
+                            }
+                            if (game.hasPlayer(current => current != player && current.group == "wei"&&current!=event.source)) {
+                                return true;
+                            }
+                            return false;
+                        },
+                        async cost(event, trigger, player) {
+                            var str="〖护驾〗选择一名魏势力角色，你回复一点体力，其受到来自"+get.translation(trigger.source)+"的一点伤害";
+                            event.result = await player.chooseTarget(str,
+                                function (card, player, target) {
+                                    return target != player && target.group == "wei"&&target!=trigger.source;
+                                }
+                            ).forResult();
+                        },
+                        async content(event, trigger, player) {
+                            await player.recover();
+                            await event.targets[0].damage(1,trigger.source);
+                            await player.addTempSkill("chong_hujia_used","roundStart");
+                        },
+                        subSkill: {
+                            "used": {
+                                mark: true,
+                                intro: {
+                                    content: "本轮已发动",
+                                },
+                                sub: true,
+                            }
+                        }
                     },
                 },
                 translate: {
@@ -481,6 +526,8 @@ game.import("extension", function () {
                     "chong_jiuyuan_info": "主公技，每回合限一次，你可以给体力值大于等于你的吴势力角色一张牌，其选择一项，①失去一点体力，②让你回复一点体力",
                     "chong_xieling": "挟令",
                     "chong_xieling_info": "出牌阶段开始时，你可以弃置一张牌，本回合所有人禁止使用或打出该花色的牌，此花色手牌不计入你的手牌上限。若如此做，你摸一张牌",
+                    "chong_hujia": "护驾",
+                    "chong_hujia_info": "主公技，每轮限一次，当你受到有来源的伤害结束后，你选择一名不为伤害来源的魏势力角色，你回复一点体力，其收到伤害来源对其造成的一点伤害",
                 },
             },
             intro: "",
