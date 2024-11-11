@@ -3,9 +3,10 @@ game.import("extension", function () {
     return {
         name: "破界重塑", content: function (config, pack) {
             lib.translate.chong_standard = "标准";
-
             lib.characterSort['mode_extension_破界重塑'] = {
-                'chong_standard': ['chong_liubei', "chong_sunquan", "chong_caocao"],
+                'chong_standard': ['chong_liubei', "chong_sunquan", "chong_caocao",
+                    "chong_guanyu"
+                ],
             };
             game.randomGetInt = function (max) {
                 return Math.round(Math.random() * (max - 1)) + 1;
@@ -27,12 +28,15 @@ game.import("extension", function () {
                     "chong_liubei": ["male", "shu", 4, ["chong_rende", "chong_dewei", "chong_renze", "chong_jijiang"], ["zhu", "ext:破界重塑/character/chong_liubei/1.jpg", "die:ext:破界重塑/audio/die/die.mp3"]],
                     "chong_sunquan": ["male", "wu", 4, ["chong_zhiheng", "chong_jiuyuan"], ["zhu", "ext:破界重塑/character/chong_sunquan/1.png", "die:ext:破界重塑/audio/die/die.mp3"]],
                     "chong_caocao": ["male", "wei", 4, ["chong_jianxiong", "chong_xieling", "chong_hujia"], ["zhu", "ext:破界重塑/character/chong_caocao/1.jpg", "die:ext:破界重塑/audio/die/chong_caocao.mp3"]],
+                    "chong_guanyu": ["male", "shu", 4, ["chong_wusheng"], ["ext:破界重塑/character/chong_guanyu/1.jpg"]],
                 },
                 translate: {
                     "chong_liubei": "重刘备",
                     "破界重塑": "破界重塑",
                     "chong_sunquan": "重孙权",
                     "chong_caocao": "重曹操",
+                    "chong_guanyu": "重关羽",
+	"#chong_jianxiong1": "宁教我负天下人，休教天下人负我！",
                 },
             },
             card: {
@@ -88,7 +92,6 @@ game.import("extension", function () {
                                 },
                                 forced: true,
                                 async content(event, trigger, player) {
-                                    debugger;
                                     trigger.num++;
                                 },
                                 sub: true,
@@ -447,6 +450,11 @@ game.import("extension", function () {
                                     ignoredHandcard: function (card, player) {
                                         if (card.suit == player.storage.chong_xieling_suit) return true;
                                     },
+                                    cardDiscardable: function (card, player, name) {
+                                        if (name == "phaseDiscard" && card.suit == player.storage.chong_xieling_suit) {
+                                            return false;
+                                        }
+                                    },
                                     cardEnabled: function (card, player) {
                                         if (card.suit == player.storage.chong_xieling_suit) return false;
                                     },
@@ -469,42 +477,290 @@ game.import("extension", function () {
                         "_priority": 0,
                     },
                     "chong_hujia": {
-                        audio:["ext:破界重塑/character/chong_caocao/chong_hujia1.mp3", "ext:破界重塑/character/chong_caocao/chong_hujia2.mp3"],
+                        audio: ["ext:破界重塑/character/chong_caocao/chong_hujia1.mp3", "ext:破界重塑/character/chong_caocao/chong_hujia2.mp3"],
                         zhuSkill: true,
                         trigger: {
                             player: "damageAfter",
                         },
                         filter: function (event, player) {
-                            if (player.hasSkill("chong_hujia_used")||event.source==undefined) {
+                            if (player.hasSkill("chong_hujia_used") || event.source == undefined) {
                                 return false;
                             }
-                            if (game.hasPlayer(current => current != player && current.group == "wei"&&current!=event.source)) {
+                            if (game.hasPlayer(current => current != player && current.group == "wei" && current != event.source)) {
                                 return true;
                             }
                             return false;
                         },
                         async cost(event, trigger, player) {
-                            var str="〖护驾〗选择一名魏势力角色，你回复一点体力，其受到来自"+get.translation(trigger.source)+"的一点伤害";
+                            var str = "〖护驾〗选择一名魏势力角色，你回复一点体力，其受到来自" + get.translation(trigger.source) + "的一点伤害";
                             event.result = await player.chooseTarget(str,
                                 function (card, player, target) {
-                                    return target != player && target.group == "wei"&&target!=trigger.source;
+                                    return target != player && target.group == "wei" && target != trigger.source;
                                 }
                             ).forResult();
                         },
                         async content(event, trigger, player) {
                             await player.recover();
-                            await event.targets[0].damage(1,trigger.source);
-                            await player.addTempSkill("chong_hujia_used","roundStart");
+                            await event.targets[0].damage(1, trigger.source);
+                            await player.addTempSkill("chong_hujia_used", "roundStart");
                         },
                         subSkill: {
-                            "used": {
+                            used: {
                                 mark: true,
                                 intro: {
                                     content: "本轮已发动",
                                 },
                                 sub: true,
+                                sourceSkill: "chong_hujia",
+                                "_priority": 0,
+                            },
+                        },
+                        "_priority": 0,
+                    },
+                    "chong_wusheng": {
+                        mod: {
+                            targetInRange: function (card) {
+                                if (get.color(card) == "red" && card.name == "sha") return true;
                             }
-                        }
+                        },
+                        group: ["chong_wusheng_equip"],
+                        audio: ["ext:破界重塑/character/chong_guanyu/chong_wusheng1.mp3", "ext:破界重塑/character/chong_guanyu/chong_wusheng2.mp3"],
+                        audioname: ["re_guanyu", "jsp_guanyu", "re_guanzhang", "dc_jsp_guanyu"],
+                        enable: ["chooseToRespond", "chooseToUse"],
+                        filterCard(card, player) {
+                            if (get.zhu(player, "shouyue")) return true;
+                            return get.color(card) == "red";
+                        },
+                        position: "hes",
+                        viewAs: {
+                            name: "sha",
+                        },
+                        viewAsFilter(player) {
+                            if (get.zhu(player, "shouyue")) {
+                                if (!player.countCards("hes")) return false;
+                            } else {
+                                if (!player.countCards("hes", { color: "red" })) return false;
+                            }
+                        },
+                        prompt: "将一张红色牌当杀使用或打出",
+                        check(card) {
+                            const val = get.value(card);
+                            if (_status.event.name == "chooseToRespond") return 1 / Math.max(0.1, val);
+                            return 5 - val;
+                        },
+                        ai: {
+                            skillTagFilter(player) {
+                                if (get.zhu(player, "shouyue")) {
+                                    if (!player.countCards("hes")) return false;
+                                } else {
+                                    if (!player.countCards("hes", { color: "red" })) return false;
+                                }
+                            },
+                            respondSha: true,
+                            yingbian: function (card, player, targets, viewer) {
+                                if (get.attitude(viewer, player) <= 0) return 0;
+                                var base = 0,
+                                    hit = false;
+                                if (get.cardtag(card, "yingbian_hit")) {
+                                    hit = true;
+                                    if (
+                                        targets.some((target) => {
+                                            return (
+                                                target.mayHaveShan(
+                                                    viewer,
+                                                    "use",
+                                                    target.getCards("h", (i) => {
+                                                        return i.hasGaintag("sha_notshan");
+                                                    })
+                                                ) &&
+                                                get.attitude(viewer, target) < 0 &&
+                                                get.damageEffect(target, player, viewer, get.natureList(card)) > 0
+                                            );
+                                        })
+                                    )
+                                        base += 5;
+                                }
+                                if (get.cardtag(card, "yingbian_add")) {
+                                    if (
+                                        game.hasPlayer(function (current) {
+                                            return (
+                                                !targets.includes(current) &&
+                                                lib.filter.targetEnabled2(card, player, current) &&
+                                                get.effect(current, card, player, player) > 0
+                                            );
+                                        })
+                                    )
+                                        base += 5;
+                                }
+                                if (get.cardtag(card, "yingbian_damage")) {
+                                    if (
+                                        targets.some((target) => {
+                                            return (
+                                                get.attitude(player, target) < 0 &&
+                                                (hit ||
+                                                    !target.mayHaveShan(
+                                                        viewer,
+                                                        "use",
+                                                        target.getCards("h", (i) => {
+                                                            return i.hasGaintag("sha_notshan");
+                                                        })
+                                                    ) ||
+                                                    player.hasSkillTag(
+                                                        "directHit_ai",
+                                                        true,
+                                                        {
+                                                            target: target,
+                                                            card: card,
+                                                        },
+                                                        true
+                                                    )) &&
+                                                !target.hasSkillTag("filterDamage", null, {
+                                                    player: player,
+                                                    card: card,
+                                                    jiu: true,
+                                                })
+                                            );
+                                        })
+                                    )
+                                        base += 5;
+                                }
+                                return base;
+                            },
+                            canLink: function (player, target, card) {
+                                if (!target.isLinked() && !player.hasSkill("wutiesuolian_skill")) return false;
+                                if (
+                                    player.hasSkill("jueqing") ||
+                                    player.hasSkill("gangzhi") ||
+                                    target.hasSkill("gangzhi")
+                                )
+                                    return false;
+                                return true;
+                            },
+                            basic: {
+                                useful: [5, 3, 1],
+                                value: [5, 3, 1],
+                            },
+                            order(item, player) {
+                                let res = 3.2;
+                                if (player.hasSkillTag("presha", true, null, true)) res = 10;
+                                if (
+                                    typeof item !== "object" ||
+                                    !game.hasNature(item, "linked") ||
+                                    game.countPlayer((cur) => cur.isLinked()) < 2
+                                )
+                                    return res;
+                                //let used = player.getCardUsable('sha') - 1.5, natures = ['thunder', 'fire', 'ice', 'kami'];
+                                let uv = player.getUseValue(item, true);
+                                if (uv <= 0) return res;
+                                let temp = player.getUseValue("sha", true) - uv;
+                                if (temp < 0) return res + 0.15;
+                                if (temp > 0) return res - 0.15;
+                                return res;
+                            },
+                            result: {
+                                target: function (player, target, card, isLink) {
+                                    let eff = -1.5,
+                                        odds = 1.35,
+                                        num = 1;
+                                    if (isLink) {
+                                        let cache = _status.event.getTempCache("sha_result", "eff");
+                                        if (typeof cache !== "object" || cache.card !== ai.getCacheKey(card, true))
+                                            return eff;
+                                        if (cache.odds < 1.35 && cache.bool) return 1.35 * cache.eff;
+                                        return cache.odds * cache.eff;
+                                    }
+                                    if (
+                                        player.hasSkill("jiu") ||
+                                        player.hasSkillTag("damageBonus", true, {
+                                            target: target,
+                                            card: card
+                                        })
+                                    ) {
+                                        if (
+                                            target.hasSkillTag("filterDamage", null, {
+                                                player: player,
+                                                card: card,
+                                                jiu: true,
+                                            })
+                                        )
+                                            eff = -0.5;
+                                        else {
+                                            num = 2;
+                                            if (get.attitude(player, target) > 0) eff = -7;
+                                            else eff = -4;
+                                        }
+                                    }
+                                    if (
+                                        !player.hasSkillTag(
+                                            "directHit_ai",
+                                            true,
+                                            {
+                                                target: target,
+                                                card: card,
+                                            },
+                                            true
+                                        )
+                                    )
+                                        odds -=
+                                            0.7 *
+                                            target.mayHaveShan(
+                                                player,
+                                                "use",
+                                                target.getCards("h", (i) => {
+                                                    return i.hasGaintag("sha_notshan");
+                                                }),
+                                                "odds"
+                                            );
+                                    _status.event.putTempCache("sha_result", "eff", {
+                                        bool: target.hp > num && get.attitude(player, target) > 0,
+                                        card: ai.getCacheKey(card, true),
+                                        eff: eff,
+                                        odds: odds,
+                                    });
+                                    return odds * eff;
+                                },
+                            },
+                            tag: {
+                                respond: 1,
+                                respondShan: 1,
+                                damage: function (card) {
+                                    if (game.hasNature(card, "poison")) return;
+                                    return 1;
+                                },
+                                natureDamage: function (card) {
+                                    if (game.hasNature(card, "linked")) return 1;
+                                },
+                                fireDamage: function (card, nature) {
+                                    if (game.hasNature(card, "fire")) return 1;
+                                },
+                                thunderDamage: function (card, nature) {
+                                    if (game.hasNature(card, "thunder")) return 1;
+                                },
+                                poisonDamage: function (card, nature) {
+                                    if (game.hasNature(card, "poison")) return 1;
+                                },
+                            },
+                        },
+                        subSkill: {
+                            "equip": {
+                                audio: "chong_wusheng",
+                                trigger: {
+                                    player: "useCard1",
+                                },
+                                forced: true,
+                                popup: false,
+                                silent: true,
+                                firstDo: true,
+                                filter: function (event, player) {
+                                    return event.card && event.card.name == "sha" && event.cards && event.cards.length == 1 && get.type(event.cards[0]) == "equip";
+                                },
+                                content: function () {
+                                    trigger.baseDamage++;
+                                },
+                                "_priority": 1,
+                            }
+                        },
+                        "_priority": 0,
                     },
                 },
                 translate: {
@@ -528,13 +784,16 @@ game.import("extension", function () {
                     "chong_xieling_info": "出牌阶段开始时，你可以弃置一张牌，本回合所有人禁止使用或打出该花色的牌，此花色手牌不计入你的手牌上限。若如此做，你摸一张牌",
                     "chong_hujia": "护驾",
                     "chong_hujia_info": "主公技，每轮限一次，当你受到有来源的伤害结束后，你选择一名不为伤害来源的魏势力角色，你回复一点体力，其收到伤害来源对其造成的一点伤害",
+                    "chong_wusheng":"武圣",
+                    "chong_wusheng_info":"你可以将一张红色牌当做【杀】使用或打出。你使用的红色【杀】没有距离限制；锁定技，你使用的由一张装备牌转化的【杀】的伤害值基数+1",
                 },
+
             },
             intro: "",
             author: "微禾",
             diskURL: "",
             forumURL: "",
             version: "1.0",
-        }, files: { "character": [], "card": [], "skill": [], "audio": [] }
+        }, files: { "character": ["chong_guanyu.jpg"], "card": [], "skill": [], "audio": [] }
     }
 });
