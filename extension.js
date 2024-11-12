@@ -1,4 +1,5 @@
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
+const chong_src="ext:破界重塑/character";
 game.import("extension", function () {
     return {
         name: "破界重塑", content: function (config, pack) {
@@ -18,17 +19,17 @@ game.import("extension", function () {
             };
             /*game.chongdir=function(player,skill)
             {
-                return ["ext:破界重塑/character/"+player.name+"/"+skill+1+".mp3","ext:破界重塑/character/"+player.name+"/"+skill+2+".mp3"];
+                return [chong_src+"/"+player.name+"/"+skill+1+".mp3",chong_src+"/"+player.name+"/"+skill+2+".mp3"];
             }*/
         }, precontent: function () {
 
         }, help: {}, config: {}, package: {
             character: {
                 character: {
-                    "chong_liubei": ["male", "shu", 4, ["chong_rende", "chong_dewei", "chong_renze", "chong_jijiang"], ["zhu", "ext:破界重塑/character/chong_liubei/1.jpg", "die:ext:破界重塑/audio/die/die.mp3"]],
-                    "chong_sunquan": ["male", "wu", 4, ["chong_zhiheng", "chong_jiuyuan"], ["zhu", "ext:破界重塑/character/chong_sunquan/1.png", "die:ext:破界重塑/audio/die/die.mp3"]],
-                    "chong_caocao": ["male", "wei", 4, ["chong_jianxiong", "chong_xieling", "chong_hujia"], ["zhu", "ext:破界重塑/character/chong_caocao/1.jpg", "die:ext:破界重塑/audio/die/chong_caocao.mp3"]],
-                    "chong_guanyu": ["male", "shu", 4, ["chong_wusheng"], ["ext:破界重塑/character/chong_guanyu/1.jpg"]],
+                    "chong_liubei": ["male", "shu", 4, ["chong_rende", "chong_dewei", "chong_renze", "chong_jijiang"], ["zhu", chong_src+"/chong_liubei/1.jpg", "die:ext:破界重塑/audio/die/die.mp3"]],
+                    "chong_sunquan": ["male", "wu", 4, ["chong_zhiheng", "chong_jiuyuan"], ["zhu", chong_src+"/chong_sunquan/1.png", "die:ext:破界重塑/audio/die/die.mp3"]],
+                    "chong_caocao": ["male", "wei", 4, ["chong_jianxiong", "chong_xieling", "chong_hujia"], ["zhu", chong_src+"/chong_caocao/1.jpg", "die:ext:破界重塑/audio/die/chong_caocao.mp3"]],
+                    "chong_guanyu": ["male", "shu", 4, ["chong_wusheng"], [chong_src+"/chong_guanyu/1.jpg"]],
                 },
                 translate: {
                     "chong_liubei": "重刘备",
@@ -36,7 +37,6 @@ game.import("extension", function () {
                     "chong_sunquan": "重孙权",
                     "chong_caocao": "重曹操",
                     "chong_guanyu": "重关羽",
-	"#chong_jianxiong1": "宁教我负天下人，休教天下人负我！",
                 },
             },
             card: {
@@ -50,7 +50,7 @@ game.import("extension", function () {
                 skill: {
                     "chong_jianxiong": {
                         group: ["chong_jianxiong_tagSkill"],
-                        audio: ["ext:破界重塑/character/chong_caocao/chong_jianxiong1.mp3", "ext:破界重塑/character/chong_caocao/chong_jianxiong2.mp3"],
+                        audio: [chong_src+"/chong_caocao/chong_jianxiong1.mp3", chong_src+"/chong_caocao/chong_jianxiong2.mp3"],
                         trigger: {
                             player: "damageEnd",
                         },
@@ -104,7 +104,7 @@ game.import("extension", function () {
                     "chong_rende": {
                         mark: true,
                         marktext: "仁",
-                        audio: ["ext:破界重塑/character/chong_liubei/chong_rende1.mp3", "ext:破界重塑/character/chong_liubei/chong_rende2.mp3"],
+                        audio: [chong_src+"/chong_liubei/chong_rende1.mp3", chong_src+"/chong_liubei/chong_rende2.mp3"],
                         intro: {
                             name: "仁德",
                             content: function (storage, player) {
@@ -191,7 +191,7 @@ game.import("extension", function () {
                         "_priority": 0,
                     },
                     "chong_renze": {
-                        audio: ["ext:破界重塑/character/chong_liubei/chong_renze1.mp3", "ext:破界重塑/character/chong_liubei/chong_renze2.mp3"],
+                        audio: [chong_src+"/chong_liubei/chong_renze1.mp3", chong_src+"/chong_liubei/chong_renze2.mp3"],
                         trigger: {
                             player: ["phaseEnd"],
                         },
@@ -215,7 +215,7 @@ game.import("extension", function () {
                         "_priority": 0,
                     },
                     "chong_dewei": {
-                        audio: ["ext:破界重塑/character/chong_liubei/chong_dewei1.mp3", "ext:破界重塑/character/chong_liubei/chong_dewei2.mp3"],
+                        audio: [chong_src+"/chong_liubei/chong_dewei1.mp3", chong_src+"/chong_liubei/chong_dewei2.mp3"],
                         group: ["chong_dewei_begin"],
                         init: function (player) {
                             player.storage.chong_dewei = true;//true代表德威可发动
@@ -298,7 +298,7 @@ game.import("extension", function () {
                     },
                     "chong_jijiang": {
                         enable: "phaseUse",
-                        audio: ["ext:破界重塑/character/chong_liubei/chong_jijiang1.mp3", "ext:破界重塑/character/chong_liubei/chong_jijiang2.mp3"],
+                        audio: [chong_src+"/chong_liubei/chong_jijiang1.mp3", chong_src+"/chong_liubei/chong_jijiang2.mp3"],
                         usable: 1,
                         zhuSkill: true,
                         unique: true,
@@ -329,7 +329,7 @@ game.import("extension", function () {
                     "chong_zhiheng": {
                         group: ["chong_zhiheng_use", "chong_zhiheng_end"],
                         locked: false,
-                        audio: ["ext:破界重塑/character/chong_sunquan/chong_zhiheng1.mp3", "ext:破界重塑/character/chong_sunquan/chong_zhiheng2.mp3"],
+                        audio: [chong_src+"/chong_sunquan/chong_zhiheng1.mp3", chong_src+"/chong_sunquan/chong_zhiheng2.mp3"],
                         enable: "phaseUse",
                         usable: 1,
                         position: "he",
@@ -384,7 +384,7 @@ game.import("extension", function () {
                         "_priority": 0,
                     },
                     "chong_jiuyuan": {
-                        audio: ["ext:破界重塑/character/chong_sunquan/chong_jiuyuan1.mp3", "ext:破界重塑/character/chong_sunquan/chong_jiuyuan2.mp3"],
+                        audio: [chong_src+"/chong_sunquan/chong_jiuyuan1.mp3", chong_src+"/chong_sunquan/chong_jiuyuan2.mp3"],
                         enable: "phaseUse",
                         usable: 1,
                         zhuSkill: true,
@@ -413,7 +413,7 @@ game.import("extension", function () {
                         "_priority": 0,
                     },
                     "chong_xieling": {
-                        audio: ["ext:破界重塑/character/chong_caocao/chong_xieling1.mp3", "ext:破界重塑/character/chong_caocao/chong_xieling2.mp3"],
+                        audio: [chong_src+"/chong_caocao/chong_xieling1.mp3", chong_src+"/chong_caocao/chong_xieling2.mp3"],
                         trigger: {
                             player: "phaseUseBegin",
                         },
@@ -477,7 +477,7 @@ game.import("extension", function () {
                         "_priority": 0,
                     },
                     "chong_hujia": {
-                        audio: ["ext:破界重塑/character/chong_caocao/chong_hujia1.mp3", "ext:破界重塑/character/chong_caocao/chong_hujia2.mp3"],
+                        audio: [chong_src+"/chong_caocao/chong_hujia1.mp3", chong_src+"/chong_caocao/chong_hujia2.mp3"],
                         zhuSkill: true,
                         trigger: {
                             player: "damageAfter",
@@ -524,7 +524,7 @@ game.import("extension", function () {
                             }
                         },
                         group: ["chong_wusheng_equip"],
-                        audio: ["ext:破界重塑/character/chong_guanyu/chong_wusheng1.mp3", "ext:破界重塑/character/chong_guanyu/chong_wusheng2.mp3"],
+                        audio: [chong_src+"/chong_guanyu/chong_wusheng1.mp3", chong_src+"/chong_guanyu/chong_wusheng2.mp3"],
                         audioname: ["re_guanyu", "jsp_guanyu", "re_guanzhang", "dc_jsp_guanyu"],
                         enable: ["chooseToRespond", "chooseToUse"],
                         filterCard(card, player) {
