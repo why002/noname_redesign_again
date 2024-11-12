@@ -1,5 +1,5 @@
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
-const chong_src="ext:破界重塑/character";
+const chong_src = "ext:破界重塑/character";
 game.import("extension", function () {
     return {
         name: "破界重塑", content: function (config, pack) {
@@ -26,10 +26,10 @@ game.import("extension", function () {
         }, help: {}, config: {}, package: {
             character: {
                 character: {
-                    "chong_liubei": ["male", "shu", 4, ["chong_rende", "chong_dewei", "chong_renze", "chong_jijiang"], ["zhu", chong_src+"/chong_liubei/1.jpg", "die:ext:破界重塑/audio/die/die.mp3"]],
-                    "chong_sunquan": ["male", "wu", 4, ["chong_zhiheng", "chong_jiuyuan"], ["zhu", chong_src+"/chong_sunquan/1.png", "die:ext:破界重塑/audio/die/die.mp3"]],
-                    "chong_caocao": ["male", "wei", 4, ["chong_jianxiong", "chong_xieling", "chong_hujia"], ["zhu", chong_src+"/chong_caocao/1.jpg", "die:ext:破界重塑/audio/die/chong_caocao.mp3"]],
-                    "chong_guanyu": ["male", "shu", 4, ["chong_wusheng"], [chong_src+"/chong_guanyu/1.jpg"]],
+                    "chong_liubei": ["male", "shu", 4, ["chong_rende", "chong_dewei", "chong_renze", "chong_jijiang"], ["zhu", `${chong_src}/chong_liubei/1.jpg`, `die:${chong_src}/chong_liubei/die.mp3`]],
+                    "chong_sunquan": ["male", "wu", 4, ["chong_zhiheng", "chong_jiuyuan"], ["zhu", `${chong_src}/chong_sunquan/1.png`, `die:${chong_src}/chong_sunquan/die.mp3`]],
+                    "chong_caocao": ["male", "wei", 4, ["chong_jianxiong", "chong_xieling", "chong_hujia"], ["zhu", `${chong_src}/chong_caocao/1.jpg`, `die:${chong_src}/chong_caocao/die.mp3`]],
+                    "chong_guanyu": ["male", "shu", 4, ["chong_wusheng"], [`${chong_src}/chong_guanyu/1.jpg`]],
                 },
                 translate: {
                     "chong_liubei": "重刘备",
@@ -50,7 +50,7 @@ game.import("extension", function () {
                 skill: {
                     "chong_jianxiong": {
                         group: ["chong_jianxiong_tagSkill"],
-                        audio: [chong_src+"/chong_caocao/chong_jianxiong1.mp3", chong_src+"/chong_caocao/chong_jianxiong2.mp3"],
+                        audio: [chong_src + "/chong_caocao/chong_jianxiong1.mp3", chong_src + "/chong_caocao/chong_jianxiong2.mp3"],
                         trigger: {
                             player: "damageEnd",
                         },
@@ -104,7 +104,7 @@ game.import("extension", function () {
                     "chong_rende": {
                         mark: true,
                         marktext: "仁",
-                        audio: [chong_src+"/chong_liubei/chong_rende1.mp3", chong_src+"/chong_liubei/chong_rende2.mp3"],
+                        audio: [chong_src + "/chong_liubei/chong_rende1.mp3", chong_src + "/chong_liubei/chong_rende2.mp3"],
                         intro: {
                             name: "仁德",
                             content: function (storage, player) {
@@ -191,7 +191,7 @@ game.import("extension", function () {
                         "_priority": 0,
                     },
                     "chong_renze": {
-                        audio: [chong_src+"/chong_liubei/chong_renze1.mp3", chong_src+"/chong_liubei/chong_renze2.mp3"],
+                        audio: [chong_src + "/chong_liubei/chong_renze1.mp3", chong_src + "/chong_liubei/chong_renze2.mp3"],
                         trigger: {
                             player: ["phaseEnd"],
                         },
@@ -215,7 +215,7 @@ game.import("extension", function () {
                         "_priority": 0,
                     },
                     "chong_dewei": {
-                        audio: [chong_src+"/chong_liubei/chong_dewei1.mp3", chong_src+"/chong_liubei/chong_dewei2.mp3"],
+                        audio: [chong_src + "/chong_liubei/chong_dewei1.mp3", chong_src + "/chong_liubei/chong_dewei2.mp3"],
                         group: ["chong_dewei_begin"],
                         init: function (player) {
                             player.storage.chong_dewei = true;//true代表德威可发动
@@ -298,7 +298,7 @@ game.import("extension", function () {
                     },
                     "chong_jijiang": {
                         enable: "phaseUse",
-                        audio: [chong_src+"/chong_liubei/chong_jijiang1.mp3", chong_src+"/chong_liubei/chong_jijiang2.mp3"],
+                        audio: [chong_src + "/chong_liubei/chong_jijiang1.mp3", chong_src + "/chong_liubei/chong_jijiang2.mp3"],
                         usable: 1,
                         zhuSkill: true,
                         unique: true,
@@ -329,7 +329,7 @@ game.import("extension", function () {
                     "chong_zhiheng": {
                         group: ["chong_zhiheng_use", "chong_zhiheng_end"],
                         locked: false,
-                        audio: [chong_src+"/chong_sunquan/chong_zhiheng1.mp3", chong_src+"/chong_sunquan/chong_zhiheng2.mp3"],
+                        audio: [chong_src + "/chong_sunquan/chong_zhiheng1.mp3", chong_src + "/chong_sunquan/chong_zhiheng2.mp3"],
                         enable: "phaseUse",
                         usable: 1,
                         position: "he",
@@ -384,7 +384,7 @@ game.import("extension", function () {
                         "_priority": 0,
                     },
                     "chong_jiuyuan": {
-                        audio: [chong_src+"/chong_sunquan/chong_jiuyuan1.mp3", chong_src+"/chong_sunquan/chong_jiuyuan2.mp3"],
+                        audio: [chong_src + "/chong_sunquan/chong_jiuyuan1.mp3", chong_src + "/chong_sunquan/chong_jiuyuan2.mp3"],
                         enable: "phaseUse",
                         usable: 1,
                         zhuSkill: true,
@@ -413,7 +413,7 @@ game.import("extension", function () {
                         "_priority": 0,
                     },
                     "chong_xieling": {
-                        audio: [chong_src+"/chong_caocao/chong_xieling1.mp3", chong_src+"/chong_caocao/chong_xieling2.mp3"],
+                        audio: [chong_src + "/chong_caocao/chong_xieling1.mp3", chong_src + "/chong_caocao/chong_xieling2.mp3"],
                         trigger: {
                             player: "phaseUseBegin",
                         },
@@ -477,7 +477,7 @@ game.import("extension", function () {
                         "_priority": 0,
                     },
                     "chong_hujia": {
-                        audio: [chong_src+"/chong_caocao/chong_hujia1.mp3", chong_src+"/chong_caocao/chong_hujia2.mp3"],
+                        audio: [chong_src + "/chong_caocao/chong_hujia1.mp3", chong_src + "/chong_caocao/chong_hujia2.mp3"],
                         zhuSkill: true,
                         trigger: {
                             player: "damageAfter",
@@ -524,7 +524,7 @@ game.import("extension", function () {
                             }
                         },
                         group: ["chong_wusheng_equip"],
-                        audio: [chong_src+"/chong_guanyu/chong_wusheng1.mp3", chong_src+"/chong_guanyu/chong_wusheng2.mp3"],
+                        audio: [chong_src + "/chong_guanyu/chong_wusheng1.mp3", chong_src + "/chong_guanyu/chong_wusheng2.mp3"],
                         audioname: ["re_guanyu", "jsp_guanyu", "re_guanzhang", "dc_jsp_guanyu"],
                         enable: ["chooseToRespond", "chooseToUse"],
                         filterCard(card, player) {
@@ -764,28 +764,54 @@ game.import("extension", function () {
                     },
                 },
                 translate: {
+                    [`#${chong_src}/chong_caocao/die:die`]: "霸业未竟，吾心不甘！",
                     "chong_jianxiong": "奸雄",
                     "chong_jianxiong_info": "每当你受到伤害后，你可以获得对你造成伤害的牌，此牌伤害+1，然后摸X张牌（X为此次伤害的伤害点数）",
                     "chong_jianxiong_tag": "雄",
+                    [`#${chong_src}/chong_caocao/chong_jianxiong1`]: "奸略逐鹿原，雄才扫狼烟！",
+                    [`#${chong_src}/chong_caocao/chong_jianxiong2`]: "鸿鹄大志，几人能懂？",
+                    "chong_xieling": "挟令",
+                    "chong_xieling_info": "出牌阶段开始时，你可以弃置一张牌，本回合所有人禁止使用或打出该花色的牌，此花色手牌不计入你的手牌上限。若如此做，你摸一张牌",
+                    [`#${chong_src}/chong_caocao/chong_xieling1`]: "历史永远由胜利者书写！",
+                    [`#${chong_src}/chong_caocao/chong_xieling2`]: "挟天子以令不臣。",
+                    "chong_hujia": "护驾",
+                    "chong_hujia_info": "主公技，每轮限一次，当你受到有来源的伤害结束后，你选择一名不为伤害来源的魏势力角色，你回复一点体力，其收到伤害来源对其造成的一点伤害",
+                    [`#${chong_src}/chong_caocao/chong_hujia1`]: "速来为我殿后！",
+                    [`#${chong_src}/chong_caocao/chong_hujia2`]: "拿下刺客，大大有赏！",
+
+                    [`#${chong_src}/chong_liubei/die:die`]: "大汉之一统，朕不复见矣。",
                     "chong_rende": "仁德",
                     "chong_rende_info": "出牌阶段，你可以将任意张手牌交给其他角色。你每给出一张牌获得一个\"仁\"标记",
+                    [`#${chong_src}/chong_liubei/chong_rende1`]: "得人心者得天下。",
+                    [`#${chong_src}/chong_liubei/chong_rende2`]: "举大事者，必以民为本。",
                     "chong_renze": "仁泽",
                     "chong_renze_info": "回合结束时，你可以令全场手牌数与你相同的角色摸一张牌，若你以此法让除自己以外的角色摸牌，你额外摸一张牌，且获得一个\"仁\"标记",
+                    [`#${chong_src}/chong_liubei/chong_renze1`]: "我将丹心酿烈酒，且取一觞慰风尘。",
+                    [`#${chong_src}/chong_liubei/chong_renze2`]: "余酒尽倾江海中，与君共宴天下人。",
                     "chong_dewei": "德威",
                     "chong_dewei_info": "每回合限一次，你可以移去两个\"仁\"标记，视为你使用或打出一张基本牌",
+                    [`#${chong_src}/chong_liubei/chong_dewei1`]: "仁德之君，则所向披靡也！",
+                    [`#${chong_src}/chong_liubei/chong_dewei2`]: "上报国家，下安黎庶。",
                     "chong_jijiang": "激将",
                     "chong_jijiang_info": "主公技，出牌阶段限一次，你可以选择一名蜀势力角色，对你选择的另一名合法目标出杀，否则他给你一张牌",
+                    [`#${chong_src}/chong_liubei/chong_jijiang1`]: "国有大难，忠臣良将何在？",
+                    [`#${chong_src}/chong_liubei/chong_jijiang2`]: "国将不保，哪位将军请战？",
+
+                    [`#${chong_src}/chong_sunquan/die:die`]: "望孙氏子孙，能护东吴万年基业。",
                     "chong_zhiheng": "制衡",
                     "chong_zhiheng_info": "每回合限一次，你可以弃置任意数量的牌，将其余手牌称为\"衡\"，然后摸以此法弃置数量的牌。当你于本出牌阶段使用或打出\"衡\"时，你摸一张牌。出牌阶段结束时，你失去手牌中\"衡\"的数量的体力",
                     "chong_zhiheng_tag": "衡",
+                    [`#${chong_src}/chong_sunquan/chong_zhiheng1`]: "多思多谋，筹谋长远。",
+                    [`#${chong_src}/chong_sunquan/chong_zhiheng2`]: "泰然处之，方能大事可成。",
                     "chong_jiuyuan": "救援",
                     "chong_jiuyuan_info": "主公技，每回合限一次，你可以给体力值大于等于你的吴势力角色一张牌，其选择一项，①失去一点体力，②让你回复一点体力",
-                    "chong_xieling": "挟令",
-                    "chong_xieling_info": "出牌阶段开始时，你可以弃置一张牌，本回合所有人禁止使用或打出该花色的牌，此花色手牌不计入你的手牌上限。若如此做，你摸一张牌",
-                    "chong_hujia": "护驾",
-                    "chong_hujia_info": "主公技，每轮限一次，当你受到有来源的伤害结束后，你选择一名不为伤害来源的魏势力角色，你回复一点体力，其收到伤害来源对其造成的一点伤害",
-                    "chong_wusheng":"武圣",
-                    "chong_wusheng_info":"你可以将一张红色牌当做【杀】使用或打出。你使用的红色【杀】没有距离限制；锁定技，你使用的由一张装备牌转化的【杀】的伤害值基数+1",
+                    [`#${chong_src}/chong_sunquan/chong_jiuyuan1`]: "得爱卿相救，孤甚感激。",
+                    [`#${chong_src}/chong_sunquan/chong_jiuyuan2`]: "东吴俊杰良将在此，岂会败下阵来。",
+
+                    "chong_wusheng": "武圣",
+                    "chong_wusheng_info": "你可以将一张红色牌当做【杀】使用或打出。你使用的红色【杀】没有距离限制；锁定技，你使用的由一张装备牌转化的【杀】的伤害值基数+1",
+                    [`#${chong_src}/chong_guanyu/chong_wusheng1`]: "金刀烈马，亦能助军威。",
+                    [`#${chong_src}/chong_guanyu/chong_wusheng2`]: "挥刀取寇首，千里单骑走。",
                 },
 
             },
