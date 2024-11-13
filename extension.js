@@ -12,9 +12,9 @@ game.import("extension", function () {
             game.randomGetInt = function (max) {
                 return Math.round(Math.random() * (max - 1)) + 1;
             }
-            game.playChong = function (skill, num) {
+            game.playChong = function (skill, num, start = 0) {
                 if (lib.config.background_speak) {
-                    game.playAudio('..', 'extension', '破界重塑', "character", skill + game.randomGetInt(num) + ".mp3");
+                    game.playAudio('..', 'extension', '破界重塑', "character", skill + (game.randomGetInt(num) + start) + ".mp3");
                 }
             };
             /*game.chongdir=function(player,skill)
@@ -29,7 +29,7 @@ game.import("extension", function () {
                     "chong_liubei": ["male", "shu", 4, ["chong_rende", "chong_dewei", "chong_renze", "chong_jijiang"], ["zhu", `${chong_src}/chong_liubei/1.jpg`, `die:${chong_src}/chong_liubei/die.mp3`]],
                     "chong_sunquan": ["male", "wu", 4, ["chong_zhiheng", "chong_jiuyuan"], ["zhu", `${chong_src}/chong_sunquan/1.png`, `die:${chong_src}/chong_sunquan/die.mp3`]],
                     "chong_caocao": ["male", "wei", 4, ["chong_jianxiong", "chong_xieling", "chong_hujia"], ["zhu", `${chong_src}/chong_caocao/1.jpg`, `die:${chong_src}/chong_caocao/die.mp3`]],
-                    "chong_guanyu": ["male", "shu", 4, ["chong_wusheng"], [`${chong_src}/chong_guanyu/1.jpg`]],
+                    "chong_guanyu": ["male", "shu", 4, ["chong_wusheng", "chong_yijue"], [`${chong_src}/chong_guanyu/1.jpg`, `die:${chong_src}/chong_guanyu/die.mp3`]],
                 },
                 translate: {
                     "chong_liubei": "重刘备",
@@ -525,11 +525,10 @@ game.import("extension", function () {
                         },
                         group: ["chong_wusheng_equip"],
                         audio: [chong_src + "/chong_guanyu/chong_wusheng1.mp3", chong_src + "/chong_guanyu/chong_wusheng2.mp3"],
-                        audioname: ["re_guanyu", "jsp_guanyu", "re_guanzhang", "dc_jsp_guanyu"],
                         enable: ["chooseToRespond", "chooseToUse"],
                         filterCard(card, player) {
                             if (get.zhu(player, "shouyue")) return true;
-                            return get.color(card) == "red";
+                            return get.color(card) == "red" || get.type(card) == "equip";
                         },
                         position: "hes",
                         viewAs: {
@@ -762,6 +761,103 @@ game.import("extension", function () {
                         },
                         "_priority": 0,
                     },
+                    "chong_yijue": {
+                        audio: [`${chong_src}/chong_guanyu/chong_yijue1.mp3`, `${chong_src}/chong_guanyu/chong_yijue2.mp3`, `${chong_src}/chong_guanyu/chong_yijue3.mp3`, `${chong_src}/chong_guanyu/chong_yijue4.mp3`, `${chong_src}/chong_guanyu/chong_yijue5.mp3`, `${chong_src}/chong_guanyu/chong_yijue6.mp3`],
+                        group: ["chong_yijue_use"],
+                        subSkill: {
+                            "use": {
+                                audio: [`${chong_src}/chong_guanyu/chong_yijue1.mp3`, `${chong_src}/chong_guanyu/chong_yijue2.mp3`],
+                                enable: "phaseUse",
+                                usable: 1,
+                                position: "h",
+                                filterTarget: function (card, player, target) {
+                                    return player != target && target.countCards("he");
+                                },
+                                filterCard: true,
+                                discard: false,
+                                lose: false,
+                                check: function (card) {
+                                    return 8 - get.value(card);
+                                },
+                                async content(event, trigger, player) {
+                                    await player.showCards(event.cards[0]);
+                                    debugger;
+                                    if (event.targets[0].countCards("he") == 0) {
+                                        return;
+                                    }
+                                    let result = await event.targets[0].chooseCard(true, "he").forResult();
+                                    await event.targets[0].showCards(result.cards[0]);
+                                    if (get.type(result.cards[0]) == get.type(event.cards[0])) {
+                                        game.playChong("chong_guanyu/chong_yijue", 2, 2);
+                                        player.gain(result.cards[0], event.targets[0], "give", "bySelf");
+                                        if (event.targets[0].hp < event.targets[0].maxHp) {
+                                            let result2 = await player.chooseBool("是否让目标回复1点体力？").forResult();
+                                            if (result2.bool) {
+                                                event.targets[0].recover();
+                                            }
+                                        }
+                                        if (get.type(result.cards[0]) == "equip") {
+                                            await event.targets[0].draw(2);
+                                        }
+
+                                    }
+                                    else {
+                                        game.playChong("chong_guanyu/chong_yijue", 2, 4);
+                                        if (!event.targets[0].hasSkill("fengyin")) {
+                                            event.targets[0].addTempSkill("fengyin");
+                                        }
+                                        event.targets[0].addTempSkill("chong_yijue_effect")
+                                    }
+                                },
+                                ai: {
+                                    result: {
+                                        target: function (player, target) {
+                                            var hs = player.getCards("h");
+                                            if (hs.length < 3) return 0;
+                                            if (target.countCards("h") > target.hp + 1 && get.recoverEffect(target) > 0) {
+                                                return 1;
+                                            }
+                                            if (player.canUse("sha", target) && (player.countCards("h", "sha") || player.countCards("he", { color: "red" }))) {
+                                                return -2;
+                                            }
+                                            return -0.5;
+                                        },
+                                    },
+                                    order: 9,
+                                    "directHit_ai": true,
+                                    skillTagFilter: function (player, tag, arg) {
+                                        if (!arg.target.hasSkillTag("new_yijue2")) return false;
+                                    },
+                                },
+                                "_priority": 0,
+                            },
+                            "effect": {
+                                trigger: {
+                                    player: "damageBegin1",
+                                },
+                                filter: function (event) {
+                                    return event.source && event.source == _status.currentPhase;
+                                },
+                                popup: false,
+                                forced: true,
+                                charlotte: true,
+                                content: function () {
+                                    game.playChong("chong_guanyu/chong_yijue", 2, 4);
+                                    trigger.num++;
+                                },
+                                mark: true,
+                                mod: {
+                                    "cardEnabled2": function (card) {
+                                        if (get.position(card) == "h") return false;
+                                    },
+                                },
+                                intro: {
+                                    content: "不能使用或打出手牌",
+                                },
+                                "_priority": 0,
+                            }
+                        },
+                    },
                 },
                 translate: {
                     [`#${chong_src}/chong_caocao/die:die`]: "霸业未竟，吾心不甘！",
@@ -808,10 +904,19 @@ game.import("extension", function () {
                     [`#${chong_src}/chong_sunquan/chong_jiuyuan1`]: "得爱卿相救，孤甚感激。",
                     [`#${chong_src}/chong_sunquan/chong_jiuyuan2`]: "东吴俊杰良将在此，岂会败下阵来。",
 
+                    [`#${chong_src}/chong_guanyu/die:die`]: "大哥恩义，桃园再聚。",
                     "chong_wusheng": "武圣",
-                    "chong_wusheng_info": "你可以将一张红色牌当做【杀】使用或打出。你使用的红色【杀】没有距离限制；锁定技，你使用的由一张装备牌转化的【杀】的伤害值基数+1",
+                    "chong_wusheng_info": "你可以将一张红色牌或装备牌当做【杀】使用或打出。你使用的红色【杀】没有距离限制；锁定技，你使用的由一张装备牌转化的【杀】的伤害值基数+1",
                     [`#${chong_src}/chong_guanyu/chong_wusheng1`]: "金刀烈马，亦能助军威。",
                     [`#${chong_src}/chong_guanyu/chong_wusheng2`]: "挥刀取寇首，千里单骑走。",
+                    "chong_yijue": "义绝",
+                    "chong_yijue_info": "出牌阶段限一次，你可以展示一张手牌并令一名有手牌的其他角色展示一张牌。若此牌与你展示的牌类别相同，则你获得此牌，并可以令其回复一点体力，若此牌为装备牌，则该角色摸两张牌；若类别不同，则该角色不能使用或打出手牌，非锁定技失效且受到伤害+1直到回合结束。",
+                    [`#${chong_src}/chong_guanyu/chong_yijue1`]: "尔等休走，且待我一辩忠奸。",
+                    [`#${chong_src}/chong_guanyu/chong_yijue2`]: "来将通名，关某刀下不斩无名之鬼！",
+                    [`#${chong_src}/chong_guanyu/chong_yijue3`]: "恩义当前，不可食言。",
+                    [`#${chong_src}/chong_guanyu/chong_yijue4`]: "义字不可违，君恩不敢忘。",
+                    [`#${chong_src}/chong_guanyu/chong_yijue5`]: "大丈夫立于世，当义字当先。",
+                    [`#${chong_src}/chong_guanyu/chong_yijue6`]: "人可无为，不可无义。",
                 },
 
             },
